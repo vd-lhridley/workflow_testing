@@ -1,0 +1,48 @@
+## This workflow deploys code to the Develop environment.
+## This workflow can be triggered manually, or is automatically triggered
+## on a code push to the develop branch.
+name:  Deploy to Stage
+on:
+  # Manually trigger a workflow
+  workflow_dispatch:
+  # Trigger a workflow on commits, to the branches listed below.
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+    branches:
+      - 'master'
+jobs:
+  security_checks:
+    uses: ./.github/workflows/security-checks.yml
+  coding_standards_checks:
+    uses: ./.github/workflows/coding-standards-checks.yml
+  phpstan_static_analysis:
+    uses: ./.github/workflows/phpstan-static-analysis.yml
+  yaml_lint:
+    uses: ./.github/workflows/yaml-lint.yml
+  test_site_install:
+    uses: ./.github/workflows/test-site-installation.yml
+  dry_run_deployment:
+    uses: ./.github/workflows/dry-run-deployment.yml
+    # Explicitly passing in the secrets to the reusable workflow so that they can
+    # be used by that workflow.  This is required for security purposes.
+    secrets:
+      ACQUIA_API_KEY: ${{ secrets.ACQUIA_API_KEY }}
+      ACQUIA_API_SECRET: ${{ secrets.ACQUIA_API_SECRET }}
+      PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
+  deploy:
+    # This workflow depends on the success of the above named jobs passing successfully
+    # If any of the above jobs fail, this job will be skipped and code will not be
+    # deployed.
+    needs: [security_checks, coding_standards_checks, phpstan_static_analysis, yaml_lint, test_site_install, dry_run_deployment]
+    if: github.event.pull_request.merged == true
+    uses: ./.github/workflows/deploy-code-stage.yml
+    # Explicitely passing in the secrets to the reusable workflow so that they can
+    # be used by that workflow.  This is required for security purposes.
+    secrets:
+      ACQUIA_API_KEY: ${{ secrets.ACQUIA_API_KEY }}
+      ACQUIA_API_SECRET: ${{ secrets.ACQUIA_API_SECRET }}
+      PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}

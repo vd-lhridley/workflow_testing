@@ -1,0 +1,90 @@
+# Workflow name, prints out into the console output.
+# This template is used as the starting point for any individual workflows.
+# It contains the necessary build steps to initialize the environment and
+# run basic validation and security checks on the composer files.  Additional
+# steps can be added to the defined job for specific workflow execution.
+#
+# Note:  By default this template is set to create a manually triggered workflow.
+# Please change the triggers to one more suitable for the workflow being created.
+#
+# Also, change the name of the workflow here for documentation and readability, as
+# this is also used to identify the workflow during execution.
+#
+# Variables:
+# @see https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables
+#   This workflow reads variables that are set at the repository level.
+#   The following environment variables will need to be created for any workflows
+#   Utilizing this template to execute correctly.
+#   - COMPOSER_MEMORY_LIMIT:  Set to "-1" to allow composer to use all available memory
+#   - NODE_VERSION:  Set to the version of NodeJS to install.  This should be set to
+#        "20" at this time
+#   - PHP_VERSION: Set to the major.minor version of PHP to install.  This should be
+#        set to "8.2" at this time.
+#   - PHP_EXTENSIONS:  Set to the list of extensions to install or disable.  This
+#        is a comma delimited list, and should be set to the following, which are 
+#        to be installed in addition to the default extensions installed by the 
+#        marketplace action, for additional ones in use on Acquia Cloud:  
+#        "gnupg, http, raphf, ssh2, xmlrpc"
+#   By setting these at the repository level, the values stored in these variables
+#   will be made available to be used by any workflow created within the repository.
+name: _Static Analysis with PHPStan (sh)
+# Workflow triggers -- modify accordingly as needed, defaults to manually triggered.
+# Comments include documentation for most commonly used triggers for code activity.
+on:
+  workflow_call:
+  # @see https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#workflow_dispatch
+  # workflow_dispatch: # Manually triggered workflow
+  #
+  # @see  https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#pull_request
+  #   Note pull_request can also take inputs to limit activity on a variety of filters,
+  #   such as only firing on specific activities, targeting specific branches, etc.  
+  #   See documentation for details.
+  #pull_request:
+  #  types: [opened, edited, reopened]
+  #
+  # @see https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#push
+  #   Note push can also take inputs to limit activity on a variety of filters,
+  #   such as only firing on specific branches, filetypes, etc.  See documentation
+  #   for details.
+  # push: # When a commit or tag is pushed to the repo
+  #   branches:
+  #     - branch name
+  #
+  # @see https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#release
+  #   Note release can also take inputs such as types.  See documentaiton for
+  #   details.
+  # release:  # When release activity takes place.
+  #   types: [array of types]
+  #
+  # @see https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#schedule
+  #    Note schedule takes a required input called cron that defines the schedule(s)
+  #    used to trigger the workflow.  Multiple cron schedules can be defined.
+  #    Non-standard cron syntax tags are not supported.  See documetation for details.
+  # schedule: # Runs on a schedule(s) defined using POSIX cron syntax.
+  #   - cron: '* * * * *'
+  #   - cron: '* * * * *'
+jobs:
+  # job machine name.  Used to add dependencies between jobs, and prints out in the
+  # console output.
+  static_analysis_checks:
+    name:  PHPStan Static Analysis
+    # @see https://docs.github.com/en/actions/writing-workflows/choosing-where-your-workflow-runs/choosing-the-runner-for-a-job#choosing-github-hosted-runners
+    # Type of runner that will be used to execute the job.
+    runs-on: ubuntu-latest
+    # Specifying environment variables specific for a job.  Variables can have
+    # hard-coded values, or can reference Repository or Organization level
+    # created variables.  Variables are referenced via the context in which they
+    # have been created.
+    # @see https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables
+    # @see https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs#about-contexts
+    env:
+      # Sets the memory limit for composer to use all available memory for
+      COMPOSER_MEMORY_LIMIT: -1
+    # Steps are a sequence of tasks executed within a job.
+    # @see https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#jobsjob_idsteps
+      STATIC_SITE_URL: $${{ vars.STATIC_SITE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Static Analysis
+        run: |
+          exit 0;

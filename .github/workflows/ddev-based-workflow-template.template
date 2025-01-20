@@ -1,0 +1,47 @@
+name: Initialization Workflow Template.
+# Run this workflow every time a new commit is pushed to the repo
+on:
+  push:
+# Run this workflow on the creation of every PR, or the reopening of a PR
+  pull_request:
+    types: [opened, reopened]
+jobs:
+  run-test-site-install:
+    name: Run Test Site Install
+    runs-on:  ubuntu-latest
+    env:
+      COMPOSER_MEMORY_LIMIT: -1
+      DRUPAL_ROOT: ./docroot
+      TRAVIS: travis
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup DDEV for site install testing
+        uses: ddev/github-action-setup-ddev@v1
+      - name: Shut down Ubuntu MySQL
+        run: sudo service mysql stop #shutdown default mysql, sudo is necessary
+      - name: Validate composer.
+        # This is a shell script step that execute commands using bash.
+        # This is an optional parameter, by default non-action related steps
+        # are shell: bash.  Included here for documentation purposes.
+        shell: bash
+        run: ddev composer validate
+        # Executes Composer audit, which runs a security check on the
+        # composer files for outstanding identified CVEs.
+      - name: Run composer install
+        # This is a shell script step that execute commands using bash.
+        # This is an optional parameter, by default non-action related steps
+        # are shell: bash.  Included here for documentation purposes.
+        shell: bash
+        run: ddev composer install -o
+        # Build theme assets needed (compile css/js, bring templates to dist directory)
+      - name: Build theme
+        run: |
+          ddev build:theme
+        # ---------------------------------------------
+        # Customize steps below for this workflow. The
+        # above steps are required setup steps for all
+        # workflows.
+        # ---------------------------------------------
+      - name: <Name of test step>
+        run: |
+          <ddev command to execute>

@@ -1,0 +1,21 @@
+name: _Test Site Install (sh)
+
+# Run this workflow every time a new commit is pushed to the repo
+on:
+  workflow_call:
+# Run this workflow on the creation of every PR, or the reopening of a PR
+#  pull_request:
+#    types: [opened, reopened]
+jobs:
+  test_site_install:
+    name: Run Test Site Install
+    runs-on:  ubuntu-latest
+    env:
+      COMPOSER_MEMORY_LIMIT: -1
+      DRUPAL_ROOT: ./docroot
+      TRAVIS: travis
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install site from config on DDEV
+        run: |
+          exit 0;

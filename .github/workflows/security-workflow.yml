@@ -1,0 +1,23 @@
+name:  Run Security Checks
+on:
+  # Manually trigger a workflow
+  workflow_dispatch:
+  # Trigger a workflow on commits, to the branches listed below.
+  push:
+    branches:
+      - 'feature/*'
+      - 'bugfix/*'
+      - 'maintenance/*'
+      - 'hotfix/*'
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+    branches:
+      - 'feature/*'
+      - 'bugfix/*'
+      - 'maintenance/*'
+      - 'hotfix/*'
+jobs:
+  security_checks:
+    uses: ./.github/workflows/security-checks.yml
