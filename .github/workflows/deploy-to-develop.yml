@@ -40,3 +40,4 @@ jobs:
       ACQUIA_API_KEY: ${{ secrets.ACQUIA_API_KEY }}
       ACQUIA_API_SECRET: ${{ secrets.ACQUIA_API_SECRET }}
       PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
+

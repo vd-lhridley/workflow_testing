@@ -27,40 +27,17 @@ jobs:
         run: echo "BRANCH_NAME=$(echo ${GITHUB_BASE_REF})" >> $GITHUB_ENV
       - name: Show branch name being used for this workflow.
         run: echo ${{ env.BRANCH_NAME }}
-      - name: Set up private SSH key for pushing builds to Acquia
-        shell: bash
-        run: |
-          mkdir -p .ddev/homeadditions/.ssh
-          echo "${{ secrets.PRIVATE_SSH_KEY }}" > .ddev/homeadditions/.ssh/id_rsa
-          chmod 700 .ddev/homeadditions/.ssh
-          chmod 600 .ddev/homeadditions/.ssh/*
-        env:
-          PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
-      - name: Setup DDEV for site install testing
-        uses: ddev/github-action-setup-ddev@v1
-      - name: Shut down Ubuntu MySQL
-        run: sudo service mysql stop #shutdown default mysql, sudo is necessary
-      - name: Validate composer.
-        # This is a shell script step that execute commands using bash.
-        # This is an optional parameter, by default non-action related steps
-        # are shell: bash.  Included here for documentation purposes.
-        shell: bash
-        run: ddev composer validate
-        # Executes Composer audit, which runs a security check on the
-        # composer files for outstanding identified CVEs.
-      - name: Run composer install
-        # This is a shell script step that execute commands using bash.
-        # This is an optional parameter, by default non-action related steps
-        # are shell: bash.  Included here for documentation purposes.
-        shell: bash
-        run: ddev composer install -o
       - name: Execute a deployment
         env:
           ACQUIA_API_KEY: ${{ env.ACQUIA_API_KEY }}
           ACQUIA_API_SECRET: ${{ env.ACQUIA_API_SECRET }}
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
+          GITHUB_CONTEXT: ${{ env.GITHUB_CONTEXT }}
         run: |
           echo ${{ env.BRANCH_NAME }}
-          printenv
           echo "----------------------------------------------"
-          ddev acquia:deploy
+          echo "GITHUB_CONTEXT"
+          echo "$GITHUB_CONTEXT"
+          echo "----------------------------------------------"
+          #echo "${{ github.ref }}"
+          exit 0;

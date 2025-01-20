@@ -20,6 +20,7 @@ jobs:
       ACQUIA_API_KEY: ${{ secrets.ACQUIA_API_KEY }}
       ACQUIA_API_SECRET: ${{ secrets.ACQUIA_API_SECRET }}
       PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
+      GITHUB_CONTEXT: ${{ toJson(github) }}
     steps:
       - uses: actions/checkout@v4
       - name: Get branch name (merge)
@@ -32,7 +33,12 @@ jobs:
           ACQUIA_API_KEY: ${{ env.ACQUIA_API_KEY }}
           ACQUIA_API_SECRET: ${{ env.ACQUIA_API_SECRET }}
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
+          GITHUB_CONTEXT: ${{ env.GITHUB_CONTEXT }}
         run: |
           echo ${{ env.BRANCH_NAME }}
           echo "----------------------------------------------"
-          exit 1;
+          echo "GITHUB_CONTEXT"
+          echo "$GITHUB_CONTEXT"
+          echo "----------------------------------------------"
+          #echo "${{ github.ref }}"
+          exit 0;
